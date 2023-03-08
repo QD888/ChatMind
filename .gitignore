@@ -31,6 +31,6 @@ coverage
 **/.env
 
 
-**/docker-compose/**
-**/docker-compose.yml
-**/pnpm-lock.yaml
+*/**/docker-compose/**
+*/**/docker-compose.yml
+*/**/pnpm-lock.yaml
