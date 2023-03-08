@@ -29,4 +29,8 @@ coverage
 *.sw?
 
 **/.env
-**/docker-compose/*
+
+
+**/docker-compose/**
+**/docker-compose.yml
+**/pnpm-lock.yaml

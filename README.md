@@ -198,14 +198,14 @@ http://localhost:3002/
 
 #### Docker compose
 
-[Hub 地址](https://hub.docker.com/repository/docker/chenzhaoyu94/chatgpt-web/general)
+[Hub 地址](https://hub.docker.com/repository/docker/qidian99/chatgpt-web/general)
 
 ```yml
 version: '3'
 
 services:
   app:
-    image: chenzhaoyu94/chatgpt-web # 总是使用 latest ,更新时重新 pull 该 tag 镜像即可
+    image: qidian99/chatgpt-web # 总是使用 latest ,更新时重新 pull 该 tag 镜像即可
     ports:
       - 3002:3002
     environment:

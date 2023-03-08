@@ -2,6 +2,8 @@ import express from 'express'
 import type { ChatContext, ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess } from './chatgpt'
 import { auth } from './middleware/auth'
+import { login } from './controllers/auth'
+import { authenticate } from './utils/auth'
 
 const app = express()
 const router = express.Router()
@@ -15,6 +17,14 @@ app.all('*', (_, res, next) => {
   res.header('Access-Control-Allow-Methods', '*')
   next()
 })
+
+router.get('/user', async (req, res) => {
+  console.log(req.auth)
+  res.setHeader('Content-type', 'application/json')
+  res.send(JSON.stringify({ user: req.auth.user }))
+})
+
+router.post('/login', login)
 
 router.post('/chat-process', auth, async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
@@ -72,6 +82,37 @@ router.post('/verify', async (req, res) => {
   }
 })
 
+router.post('/session', async (req, res) => {
+  try {
+    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
+    const hasAuth = typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0
+    res.send({ status: 'Success', message: '', data: { auth: hasAuth } })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.post('/verify', async (req, res) => {
+  try {
+    const { token } = req.body as { token: string }
+    if (!token)
+      throw new Error('Secret key is empty')
+
+    if (process.env.AUTH_SECRET_KEY !== token)
+      throw new Error('密钥无效 | Secret key is invalid')
+
+    res.send({ status: 'Success', message: 'Verify successfully', data: null })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+app.use(authenticate.unless({ path: ['/login'] }))
+app.use((err, req, res, next) => {
+  res.status(err.status).json(err)
+})
 app.use('', router)
 app.use('/api', router)
 
