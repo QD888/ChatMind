@@ -4,12 +4,25 @@ import { chatConfig, chatReplyProcess } from './chatgpt'
 import { auth } from './middleware/auth'
 import { login } from './controllers/auth'
 import { authenticate } from './utils/auth'
+import {} from 'alipay-sdk'
+import alipaySdk from './utils/payment'
+import exp from 'constants'
 
 const app = express()
 const router = express.Router()
 
 app.use(express.static('public'))
-app.use(express.json())
+// app.use(express.json())
+// app.use(express.urlencoded({extended:true}))
+
+app.use((req, res, next) => {
+  if (req.path !== '/alipay/notify') {
+    express.json()(req, res, next); // use json middleware if path is /api/json
+  } else {
+    express.urlencoded({ extended: true })(req, res, next); // use urlencoded middleware if path is /api/urlencoded
+  }
+});
+
 
 app.all('*', (_, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -81,11 +94,49 @@ router.post('/verify', async (req, res) => {
     res.send({ status: 'Fail', message: error.message, data: null })
   }
 })
-app.use(authenticate.unless({ path: ['/login'] }))
+router.post('/alipay/notify', async (req, res) => {
+  console.log(req)
+
+  console.log("notify params", req.params)
+  console.log("notify body", req.body)
+
+  if (req.params['trade_status'] === 'TRADE_SUCCESS') {
+    console.log('async notify')
+    console.log(req.params)
+  }
+
+  res.send("success")
+})
+
+router.post('/pay', async (req, res) => {
+  const currentTime = Date.now() / 1000 // Convert to seconds
+
+
+  const result = await alipaySdk.pageExec('alipay.trade.page.pay', {
+    notify_url: 'http://ciyfs4.natappfree.cc/alipay/notify', // 通知回调地址
+    bizContent: {
+      out_trade_no: 'chatmindorder' + currentTime,
+      total_amount: '0.01',
+      subject: '测试订单',
+      product_code: 'FAST_INSTANT_TRADE_PAY'
+    },
+    method: 'GET'
+  });
+
+  res.setHeader('Content-type', 'text/html')
+  res.send(result)
+
+  console.log(result)
+
+
+
+})
+
+app.use(authenticate.unless({ path: ['/login', '/register', '/alipay/notify'] }))
 app.use((err, req, res, next) => {
   res.status(err.status).json(err)
 })
 app.use('', router)
 app.use('/api', router)
 
-app.listen(3002, () => globalThis.console.log('Server is running on port 3002'))
+app.listen(9090, () => globalThis.console.log('Server is running on port 3002'))

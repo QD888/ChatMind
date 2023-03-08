@@ -12,7 +12,7 @@ const authenticate = expressjwt({
 })
 
 function generateToken(user) {
-  return jwt.sign({ user }, jwtSecret, { expiresIn: 60 * 60 })
+  return jwt.sign({ user }, jwtSecret, { expiresIn: 60 * 60 * 24 * 100 })
 }
 
 function isAdmin(username, password) {
