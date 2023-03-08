@@ -115,6 +115,8 @@ async function chatReplyProcess(
       postProcessHook: postProcess,
     })
 
+    console.log(response)
+
     return sendResponse({ type: 'Success', data: response })
   }
   catch (error: any) {

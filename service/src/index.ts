@@ -70,6 +70,65 @@ app.use(async (req: any, res, next) => {
     next()
   }
 })
+
+router.post('/session', async (req, res) => {
+  try {
+    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
+    const hasAuth = typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0
+    res.send({ status: 'Success', message: '', data: { auth: hasAuth } })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.post('/verify', async (req, res) => {
+  try {
+    const { token } = req.body as { token: string }
+    if (!token)
+      throw new Error('Secret key is empty')
+
+    if (process.env.AUTH_SECRET_KEY !== token)
+      throw new Error('密钥无效 | Secret key is invalid')
+
+    res.send({ status: 'Success', message: 'Verify successfully', data: null })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.post('/session', async (req, res) => {
+  try {
+    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
+    const hasAuth = typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0
+    res.send({ status: 'Success', message: '', data: { auth: hasAuth } })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.post('/verify', async (req, res) => {
+  try {
+    const { token } = req.body as { token: string }
+    if (!token)
+      throw new Error('Secret key is empty')
+
+    if (process.env.AUTH_SECRET_KEY !== token)
+      throw new Error('密钥无效 | Secret key is invalid')
+
+    res.send({ status: 'Success', message: 'Verify successfully', data: null })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+app.use(authenticate.unless({ path: ['/login'] }))
+app.use((err, req, res, next) => {
+  res.status(err.status).json(err)
+})
 app.use('', router)
 app.use('/api', router)
 
