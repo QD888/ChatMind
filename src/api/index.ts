@@ -2,8 +2,8 @@ import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 import { post } from '@/utils/request'
 import { useTokenAuthStore } from '@/store'
 
-const authStore = useTokenAuthStore()
 const withAuth = (request: any) => {
+  const authStore = useTokenAuthStore()
   if (authStore.authInfo.token)
     return { ...request, headers: { Authorization: `Bearer ${authStore.authInfo.token}`, ...request.headers } }
 
