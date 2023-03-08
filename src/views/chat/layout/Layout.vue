@@ -11,6 +11,7 @@ import { useAppStore, useAuthStore, useChatStore, useTokenAuthStore } from '@/st
 const router = useRouter()
 const appStore = useAppStore()
 const chatStore = useChatStore()
+const alertStore = useAlertStore()
 const authStore = useAuthStore()
 const tokenAuthStore = useTokenAuthStore()
 
