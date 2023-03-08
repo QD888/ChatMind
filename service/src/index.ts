@@ -2,9 +2,8 @@ import express from 'express'
 import type { ChatContext, ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess } from './chatgpt'
 import { auth } from './middleware/auth'
-import { login } from './controllers/auth'
+import { login, register } from './controllers/auth'
 import { authenticate } from './utils/auth'
-import {} from 'alipay-sdk'
 import alipaySdk from './utils/payment'
 import exp from 'constants'
 
@@ -38,6 +37,7 @@ router.get('/user', async (req, res) => {
 })
 
 router.post('/login', login)
+router.post('/register', register)
 
 router.post('/chat-process', auth, async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
@@ -94,6 +94,7 @@ router.post('/verify', async (req, res) => {
     res.send({ status: 'Fail', message: error.message, data: null })
   }
 })
+
 router.post('/alipay/notify', async (req, res) => {
   console.log(req)
 
