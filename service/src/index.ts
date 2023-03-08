@@ -4,6 +4,7 @@ import { authenticate, generateRegex as generateApiRegex, updateRootAdminUser } 
 import { users } from './model'
 import { Role } from './model/helper'
 import routers from './router'
+import alipaySdk from './utils/payment'
 // update admin user
 updateRootAdminUser()
 
@@ -97,7 +98,41 @@ router.post('/verify', async (req, res) => {
     res.send({ status: 'Fail', message: error.message, data: null })
   }
 })
-app.use(authenticate.unless({ path: ['/login'] }))
+router.post('/alipay/notify', async (req, res) => {
+  console.log(req)
+
+  console.log('notify params', req.params)
+  console.log('notify body', req.body)
+
+  if (req.params.trade_status === 'TRADE_SUCCESS') {
+    console.log('async notify')
+    console.log(req.params)
+  }
+
+  res.send('success')
+})
+
+router.post('/pay', async (req, res) => {
+  const currentTime = Date.now() / 1000 // Convert to seconds
+
+  const result = await alipaySdk.pageExec('alipay.trade.page.pay', {
+    notify_url: 'http://ciyfs4.natappfree.cc/alipay/notify', // 通知回调地址
+    bizContent: {
+      out_trade_no: `chatmindorder${currentTime}`,
+      total_amount: '0.01',
+      subject: '测试订单',
+      product_code: 'FAST_INSTANT_TRADE_PAY',
+    },
+    method: 'GET',
+  })
+
+  res.setHeader('Content-type', 'text/html')
+  res.send(result)
+
+  console.log(result)
+})
+
+app.use(authenticate.unless({ path: ['/login', '/register', '/alipay/notify'] }))
 app.use((err, req, res, next) => {
   res.status(err.status).json(err)
 })
