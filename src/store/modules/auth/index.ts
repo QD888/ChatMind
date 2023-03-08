@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import jwt_decode from 'jwt-decode'
 import { defaultSetting, getLocalState, getToken, removeToken, setLocalState, setToken } from './helper'
 import type { AuthInfo, UserState } from './helper'
 import { store } from '@/store'
@@ -74,6 +75,27 @@ export const useTokenAuthStore = defineStore('auth-store', {
         router.push(this.returnUrl!)
       else
         await router.push({ name: 'Root' })
+    },
+    checkTokenExpiration() {
+      console.log('Checking expire')
+      try {
+        const decodedToken: any = jwt_decode(this.authInfo.token!)
+        const currentTime = Date.now() / 1000 // Convert to seconds
+        console.log(decodedToken, currentTime)
+
+        if (decodedToken.exp > currentTime)
+          return false
+      }
+      catch (ignored) {}
+      // Token has expired
+      console.log('Token has expired')
+
+      // useAlertStore().error(t(' common.unauthorizedTips '))
+      // Redirect to login page or handle token expiration as needed
+      // const alertStore = useAlertStore()
+      // alertStore.error(t(' common.unauthorizedTips '))
+
+      return true
     },
   },
 })

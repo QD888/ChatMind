@@ -14,6 +14,7 @@ export default {
     failed: 'Failed',
     verify: 'Verify',
     unauthorizedTips: 'Unauthorized, please verify first.',
+    back: 'Go Back',
   },
   chat: {
     placeholder: 'Ask me anything...(Shift + Enter = line break)',
@@ -50,6 +51,8 @@ export default {
     reverseProxy: 'Reverse Proxy',
     timeout: 'Timeout',
     socks: 'Socks',
+    account: 'Account',
+    logout: 'Log out',
   },
 
 }

@@ -1,7 +1,6 @@
 import type { App } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { setupPageGuard } from './permission'
 import { ChatLayout } from '@/views/chat/layout'
 import { useAlertStore, useTokenAuthStore } from '@/store'
 import { AccountLayout } from '@/views/account/layout'
@@ -56,7 +55,7 @@ export const router = createRouter({
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
 
-setupPageGuard(router)
+// setupPageGuard(router)
 router.beforeEach(async (to) => {
   // clear alert on route change
   const alertStore = useAlertStore()

@@ -14,6 +14,7 @@ export default {
     failed: '操作失敗',
     verify: '驗證',
     unauthorizedTips: '未經授權，請先進行驗證。',
+    back: '返回',
   },
   chat: {
     placeholder: '來說點什麼...（Shift + Enter = 換行）',
@@ -49,5 +50,7 @@ export default {
     reverseProxy: '反向代理',
     timeout: '逾時',
     socks: 'Socks',
+    account: '账号',
+    logout: '退出登录',
   },
 }

@@ -16,6 +16,7 @@ const { language } = useLanguage()
     :locale="language"
   >
     <NaiveProvider>
+      <Alert />
       <RouterView />
     </NaiveProvider>
   </NConfigProvider>

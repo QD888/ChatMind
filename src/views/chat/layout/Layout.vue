@@ -4,21 +4,27 @@ import { NLayout, NLayoutContent } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import Sider from './sider/index.vue'
 import Permission from './Permission.vue'
+import Alert from '@/components/common/Alert/index.vue'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useAppStore, useAuthStore, useChatStore } from '@/store'
+import { useAlertStore, useAppStore, useAuthStore, useChatStore, useTokenAuthStore } from '@/store'
 
 const router = useRouter()
 const appStore = useAppStore()
 const chatStore = useChatStore()
+const alertStore = useAlertStore()
 const authStore = useAuthStore()
+const authTokenStore = useTokenAuthStore()
 
 router.replace({ name: 'Chat', params: { uuid: chatStore.active } })
-console.log('chat layout')
 const { isMobile } = useBasicLayout()
 
 const collapsed = computed(() => appStore.siderCollapsed)
 
 const needPermission = computed(() => !!authStore.session?.auth && !authStore.token)
+const tokenValid = computed(() => !!authTokenStore.authInfo?.token && !authTokenStore.checkTokenExpiration())
+
+// if (!tokenValid.value)
+//   alertStore.error(t(' common.unauthorizedTips '))
 
 const getMobileClass = computed(() => {
   if (isMobile.value)
@@ -47,5 +53,6 @@ const getContainerClass = computed(() => {
       </NLayout>
     </div>
     <Permission :visible="needPermission" />
+    <Alert :visible="!tokenValid" :message="$t('common.unauthorizedTips')" redirect="/account/login" />
   </div>
 </template>
