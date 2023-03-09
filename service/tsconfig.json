@@ -15,7 +15,13 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "outDir": "build",
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/middleware/*": ["./middleware/*"],
+      "@/utils/*": ["./utils/*"],
+      "@/chatgpt/*": ["./chatgpt/*"],
+      "@/env": ["./env.js"]
+    }
   },
   "exclude": [
     "node_modules",

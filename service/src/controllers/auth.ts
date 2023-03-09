@@ -1,5 +1,7 @@
-import { generateToken, isAdmin } from 'src/utils/auth'
-import kv from 'src/utils/keyv'
+import { users } from 'src/model'
+import type { User } from 'src/model/helper'
+import { generateToken, hashPassword, isAdmin, matchPassword } from 'src/utils/auth'
+
 function loginSuccess(user) {
   return {
     code: 200,
@@ -19,8 +21,8 @@ const login = async (req, res) => {
     return
   }
 
-  if (await kv.user?.has(username)) {
-    const { password: encoded } = await kv.user?.get(username)
+  if (await users.has(username)) {
+    const { password: encoded } = await users.read(username)
     if (matchPassword(password, encoded)) {
       res.send(loginSuccess(username))
       return
@@ -31,15 +33,15 @@ const login = async (req, res) => {
 }
 
 const register = async (req, res) => {
-  const { firstName, lastName, username, password = '' } = req.body as { firstName: string; lastName: string; username: string; password?: string }
+  const { firstName, lastName, username, password = '' }: Partial<User> = req.body
 
-  if (process.env.ADMIN_USER === username || await kv.user?.has(username)) {
+  if (process.env.ADMIN_USER === username || await users.has(username)) {
     res.send(registerFailed({ username }, 'User already exists.'))
     return
   }
 
-  await kv.user?.set(username, {
-    password,
+  await users.create(username, {
+    password: hashPassword(password),
     firstName,
     lastName,
   })
@@ -78,7 +80,4 @@ function loginFailed(username: string): any {
 export {
   login,
   register,
-}
-function matchPassword(password: string, encoded: any) {
-  return password === encoded
 }
