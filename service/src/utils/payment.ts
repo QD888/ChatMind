@@ -21,6 +21,5 @@ export function createOrderId() {
 export function createAmount(amount: number, delta = 0) {
   return new Decimal(amount).add(delta).toNumber()
 }
-export default alipaySdk
 
 export default alipaySdk

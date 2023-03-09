@@ -107,7 +107,7 @@ router.post('/alipay/notify', async (req, res) => {
 
   if (req.params.trade_status === 'TRADE_SUCCESS') {
     console.log('async notify')
-    console.log(req.params)
+    console.log(req.body)
   }
 
   res.send('success')
@@ -133,8 +133,8 @@ router.post('/pay', async (req, res) => {
   console.log(result)
 })
 
-app.use(authenticate.unless({ path: ['/login', '/register', '/alipay/notify'] }))
-app.use((err, req, res, next) => {
+app.use(authenticate.unless({ path: ['/login', '/api/login', '/alipay/notify'] }))
+app.use((err, _req, res, _next) => {
   res.status(err.status).json(err)
 })
 app.use('', router)
