@@ -44,10 +44,10 @@ const register = async (req, res) => {
     lastName,
   })
 
-  res.send(registerSuccess({ firstName, lastName, username, password }))
+  res.send(registerSuccess({ username }))
 }
 
-function registerSuccess({ firstName, lastName, username, password }) {
+function registerSuccess({ username }) {
   return {
     code: 200,
     status: 'Success',

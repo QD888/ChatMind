@@ -34,7 +34,7 @@ const { alert } = storeToRefs(alertStore)
           v-if="!!alert?.message || message"
           block
           type="primary"
-          @click="$event => router.push(redirect)"
+          @click="$event => router.push(redirect ? redirect : '#')"
         >
           {{ $t('common.back') }}
         </NButton>

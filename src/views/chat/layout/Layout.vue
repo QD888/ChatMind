@@ -6,14 +6,13 @@ import Sider from './sider/index.vue'
 import Permission from './Permission.vue'
 import Alert from '@/components/common/Alert/index.vue'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useAlertStore, useAppStore, useAuthStore, useChatStore, useTokenAuthStore } from '@/store'
+import { useAppStore, useAuthStore, useChatStore, useTokenAuthStore } from '@/store'
 
 const router = useRouter()
 const appStore = useAppStore()
 const chatStore = useChatStore()
-const alertStore = useAlertStore()
 const authStore = useAuthStore()
-const authTokenStore = useTokenAuthStore()
+const tokenAuthStore = useTokenAuthStore()
 
 router.replace({ name: 'Chat', params: { uuid: chatStore.active } })
 const { isMobile } = useBasicLayout()
@@ -21,7 +20,7 @@ const { isMobile } = useBasicLayout()
 const collapsed = computed(() => appStore.siderCollapsed)
 
 const needPermission = computed(() => !!authStore.session?.auth && !authStore.token)
-const tokenValid = computed(() => !!authTokenStore.authInfo?.token && !authTokenStore.checkTokenExpiration())
+const tokenValid = computed(() => !!tokenAuthStore.authInfo?.token && !tokenAuthStore.checkTokenExpiration())
 
 // if (!tokenValid.value)
 //   alertStore.error(t(' common.unauthorizedTips '))

@@ -2,7 +2,7 @@
 import { Field, Form } from 'vee-validate'
 import * as Yup from 'yup'
 
-import { useAuthStore } from '@/store'
+import { useTokenAuthStore } from '@/store'
 import { login } from '@/api'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 
@@ -13,12 +13,12 @@ const schema = Yup.object().shape({
 
 async function onSubmit(values: any) {
   console.log('submitting login', values)
-  const authStore = useAuthStore()
+  const tokenAuthStore = useTokenAuthStore()
   const { username, password } = values
   const resp = await login({ username, password })
   if (resp.code === 200) {
     console.log('login success', resp)
-    authStore.updateAuthInfo({
+    tokenAuthStore.updateAuthInfo({
       username: resp.data.user,
       token: resp.data.token,
     })

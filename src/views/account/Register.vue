@@ -2,7 +2,7 @@
 import { Field, Form } from 'vee-validate'
 import * as Yup from 'yup'
 
-import { useAlertStore, useAuthStore } from '@/store'
+import { useAlertStore, useTokenAuthStore } from '@/store'
 import { router } from '@/router'
 
 const schema = Yup.object().shape({
@@ -18,10 +18,10 @@ const schema = Yup.object().shape({
 })
 
 async function onSubmit(values: any) {
-  const authStore = useAuthStore()
+  const authStore = useTokenAuthStore()
   const alertStore = useAlertStore()
   try {
-    // await authStore.updateAuthInfo(values);
+    await authStore.updateAuthInfo(values)
     await router.push('/account/login')
     alertStore.success('Registration successful')
   }
