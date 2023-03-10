@@ -60,7 +60,7 @@ async function isCurrentUserAdmin(req) {
 
 async function updateRootAdminUser() {
   // Get an iterator
-  const iterator: AsyncGenerator<any, void, User> = users.iterator()
+  const iterator: AsyncGenerator<any, void, any> = users.iterator()
 
   // Iterate over the key-value pairs
   for await (const [key, value] of iterator) {
@@ -77,7 +77,7 @@ async function updateRootAdminUser() {
       console.log(`updating role for user ${key}`)
     }
   }
-  users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD), role: Role.ADMIN })
+  users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN })
 }
 
 async function isCurrentUserAdmin(req) {
