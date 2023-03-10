@@ -75,5 +75,6 @@ export default {
     socks: 'Socks',
     account: '账号',
     logout: '退出登录',
+    sponsorship: '贊助',
   },
 }

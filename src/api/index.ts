@@ -58,6 +58,13 @@ export function login({ username, password }: { username: string; password: stri
   })
 }
 
+export function signup({ username, password }: { username: string; password: string }) {
+  return post({
+    url: '/register',
+    data: { username, password },
+  })
+}
+
 export function fetchSession<T>() {
   return post<T>({
     url: '/session',
@@ -69,4 +76,11 @@ export function fetchVerify<T>(token: string) {
     url: '/verify',
     data: { token },
   })
+}
+
+export function submitOrder({ amount }: { amount: any }) {
+  return post(withAuth({
+    url: '/pay',
+    data: { amount },
+  }))
 }

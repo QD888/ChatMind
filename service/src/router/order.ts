@@ -1,7 +1,7 @@
 import express from 'express'
-import { orders, users } from '../model'
+import { orders, subscriptions, users } from '../model'
 import { Role } from '../model/helper'
-import alipaySdk, { countTimes, createAmount, createOrderId } from '../utils/payment'
+import alipaySdk, { calculateTokens, countTimes, createAmount, createOrderId } from '../utils/payment'
 
 const router = express.Router()
 
@@ -39,12 +39,13 @@ router.post('/alipay/pay', async (req, res) => {
   console.log(result)
 })
 
-router.post('/pay', async (req, res) => {
+router.post('/pay', async (req: any, res) => {
   // 订单号
   const id = createOrderId()
 
   // 订单金额
-  const amount = 0.01
+  const { amount: amountRaw } = req.body
+  const amount = isNaN(+amountRaw) ? 1 : +amountRaw
 
   // 获取未支付订单列表
   const orderIt = orders.iterator()
@@ -97,10 +98,12 @@ router.post('/pay', async (req, res) => {
   else {
     // 创建订单
     const order = {
+      user: req.auth.user,
       createdAt: new Date(),
       type: 'subcription',
       amount,
       actualAmount: needPay,
+      tokens: calculateTokens(needPay),
       status: false,
     }
     await orders.create(id, order, 2 * 60_000)
@@ -118,35 +121,91 @@ router.post('/pay', async (req, res) => {
 })
 
 router.post('/notify', async (req: any, res) => {
-  const { id } = req.body
+  const { id, amount: amountRaw } = req.body
+  console.log(`amount raw: ${amountRaw}`)
+  const amount = +amountRaw
+  let orderMatch = null
+  if (id) {
+    const user = req.auth.user
 
-  const user = req.auth.user
-  if (!isModerator((await users.read(user))?.role)) {
+    if (!isModerator((await users.read(user))?.role)) {
+      res.status(404).send({
+        status: 'Fail',
+        message: `用户无权操作订单${id}`,
+      })
+      return
+    }
+    orderMatch = await orders.read(id)
+    if (!orderMatch) {
+      console.log(`订单 ${id} 不存在`)
+      res.status(404).send({
+        status: 'Fail',
+        message: `订单 ${id} 不存在`,
+      })
+      return
+    }
+  }
+
+  // use amount
+  console.log(`using amount to verify order. amount=${amount}`)
+  const orderIt = orders.iterator()
+
+  for await (const [key, value] of orderIt) {
+    const {
+      createdAt,
+      actualAmount,
+      status,
+    } = value
+    if (actualAmount === amount && !status && countTimes(Date.parse(createdAt), Date.now()) <= 2) {
+      orderMatch = value
+      break
+    }
+  }
+
+  if (!orderMatch) {
+    console.log(`订单 amount=${amount} 不存在`)
     res.status(404).send({
       status: 'Fail',
-      message: `用户无权操作订单${id}`,
+      message: '订单不存在',
     })
     return
   }
-  const order = await orders.read(id)
-  if (!order) {
-    console.log(`订单 ${id} 不存在`)
-    res.status(404).send({
-      status: 'Fail',
-      message: `订单 ${id} 不存在`,
-    })
-    return
-  }
-  order.status = true
-  await orders.update(id, order)
-  console.log(`订单 ${id} 支付成功`)
+
+  orderMatch.status = true
+  await orders.update(orderMatch.id, orderMatch)
+
+  // update user tokens
+
+  console.log(`订单 ${orderMatch.id} 支付成功`)
   res.send({
     status: 'Success',
-    message: `订单 ${id} 支付成功`,
+    message: `订单 ${orderMatch.id} 支付成功`,
   })
+
+  const user = orderMatch.user
+
+  if (!user)
+    return
+
+  const userInfo = await users.read(user)
+
+  const subscriptionId = userInfo.subscription
+
+  if (!subscriptionId) {
+    console.log(`user ${user} has no active subscription`)
+    return
+  }
+
+  const subscription = await subscriptions.read(subscriptionId)
+  if (!subscription) {
+    console.log(`user ${user} has no active subscription`)
+    return
+  }
+  await subscriptions.update(subscriptionId, { max: subscription.max + orderMatch.tokens })
+  console.log(`user ${user} subscription updated. current token used = ${subscription.used}, max token = ${subscription.max + orderMatch.tokens}, `)
 })
 
-router.get('/order/:id', async (req, res) => {
+router.get('/orders/:id', async (req, res) => {
   const { id } = req.params
   const order = await orders.read(id)
   if (!order) {
@@ -164,7 +223,6 @@ router.get('/order/:id', async (req, res) => {
       id,
       status,
       actualAmount,
-
     },
   })
 })

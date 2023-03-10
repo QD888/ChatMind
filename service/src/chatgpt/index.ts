@@ -99,7 +99,6 @@ async function chatReplyProcess(
     let options: SendMessageOptions = { timeoutMs }
 
     if (lastContext) {
-      console.log(lastContext)
       if (apiModel === 'ChatGPTAPI')
         options = { parentMessageId: lastContext.parentMessageId }
       else

@@ -16,7 +16,7 @@ router.post('/chat-process', auth, async (req: any, res) => {
   const max = subscription.max
 
   console.log(subscription)
-  const end = new Date(subscription.end)
+  const end = Date.parse(subscription.end)
   if (end - Date.now() < 0) {
     console.log('subscription expired')
 
@@ -40,6 +40,7 @@ router.post('/chat-process', auth, async (req: any, res) => {
     console.log(`For user: ${req.auth.user}, numTokens: ${numTokens}, used: ${used}, max: ${max}`)
   }
 
+  let shouldUpdateSubscription = true
   try {
     const { prompt, options = {} } = req.body as { prompt: string; options?: ChatContext }
     let firstChunk = true
@@ -49,11 +50,13 @@ router.post('/chat-process', auth, async (req: any, res) => {
     }, { precheck: precheck.bind(used), postProcess: postProcess.bind(used) })
   }
   catch (error) {
-    console.log(JSON.stringify(error))
+    // console.log(JSON.stringify(error))
     res.write(JSON.stringify(error))
+    shouldUpdateSubscription = false
   }
   finally {
-    updateUserSubcription({ ...subscription, used })
+    if (shouldUpdateSubscription)
+      updateUserSubcription({ ...subscription, used: used > subscription.max ? subscription.max : used })
     res.end()
   }
 })

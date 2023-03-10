@@ -40,9 +40,10 @@ export interface Subscription {
 
 export interface Order {
   id: string
-  user: User
+  user: string
   type: string
   amount: number
+  tokens: number
   actualAmount: number
   createdAt: Date
   status: boolean

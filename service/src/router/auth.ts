@@ -1,12 +1,27 @@
 import express from 'express'
+import { users } from 'src/model'
 import { login, register } from '../controllers/auth'
-import type { AuthenticatedRequest } from './../utils/helper'
 
 const router = express.Router()
-router.get('/user', async (req: AuthenticatedRequest, res) => {
+router.get('/user', async (req: any, res) => {
   console.log('current user: ', req.auth)
-  res.setHeader('Content-type', 'application/json')
-  res.send(JSON.stringify({ user: req.auth.user }))
+  const user = await users.read(req.auth.user)
+
+  if (!user) {
+    res.send({
+      code: 403,
+      status: 'Fail',
+      message: 'User not logged in',
+    })
+    return
+  }
+  res.send({
+    code: 200,
+    status: 'Success',
+    data: {
+      ...user,
+    },
+  })
 })
 router.post('/login', login)
 router.post('/register', register)

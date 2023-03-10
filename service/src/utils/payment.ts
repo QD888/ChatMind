@@ -21,4 +21,8 @@ export function createOrderId() {
 export function createAmount(amount: number, delta = 0) {
   return new Decimal(amount).add(delta).toNumber()
 }
+
+export function calculateTokens(amount: number, tokensPerYen = 10000) {
+  return Math.floor(amount * tokensPerYen)
+}
 export default alipaySdk

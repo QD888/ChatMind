@@ -11,7 +11,7 @@ class BaseModel<T> {
   }
 
   async create(id, data: Partial<T>, ttl: number | undefined = undefined) {
-    return ttl ? await this.store.set(id, { id, ...data }, ttl) : await this.store.set(id, { [id]: id, ...data })
+    return ttl ? await this.store.set(id, { id, ...data }, ttl) : await this.store.set(id, { id, ...data })
   }
 
   async read(id) {

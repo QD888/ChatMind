@@ -4,6 +4,7 @@ import { NModal, NTabPane, NTabs } from 'naive-ui'
 import General from './General.vue'
 import About from './About.vue'
 import Subscription from './Subscription.vue'
+import Sponsorship from './Sponsorship.vue'
 import { SvgIcon } from '@/components/common'
 
 const props = defineProps<Props>()
@@ -56,6 +57,13 @@ const show = computed({
             <span class="ml-2">{{ $t('setting.subscription') }}</span>
           </template>
           <Subscription />
+        </NTabPane>
+        <NTabPane name="Sponsorship" tab="Sponsorship">
+          <template #tab>
+            <SvgIcon class="text-lg" icon="ri:user-line" />
+            <span class="ml-2">{{ $t('setting.sponsorship') }}</span>
+          </template>
+          <Sponsorship />
         </NTabPane>
       </NTabs>
     </div>

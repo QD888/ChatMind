@@ -69,7 +69,7 @@ function registerSuccess({ username }) {
 function registerFailed({ username }, reason) {
   return {
     code: 403,
-    status: 'Failed',
+    status: 'Fail',
     message: reason,
   }
 }
@@ -77,7 +77,7 @@ function registerFailed({ username }, reason) {
 function loginFailed(username: string): any {
   return {
     code: 401,
-    status: 'Failed',
+    status: 'Fail',
     message: `Login failed for user ${username}.`,
   }
 }

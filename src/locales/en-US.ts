@@ -76,6 +76,7 @@ export default {
     socks: 'Socks',
     account: 'Account',
     logout: 'Log out',
+    sponsorship: 'Sponsor',
   },
 
 }

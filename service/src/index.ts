@@ -15,7 +15,9 @@ router.use(...routers)
 app.use(authenticate.unless({
   path: [
     generateApiRegex('login'),
+    generateApiRegex('register'),
     generateApiRegex('alipay\/notify'),
+    // generateApiRegex('notify'),
   ],
 }))
 
@@ -51,13 +53,13 @@ app.use(async (req: any, res, next) => {
     const user = await users.read(req.auth.user)
     req.auth.role = user?.role
   }
-  console.log('populate auth', req.auth)
+  // console.log('populate auth', req.auth)
   next()
 })
 
 // authorization for admin user
 const ADMIN_PRIVILEGED_PATHS = [
-  generateApiRegex('register'),
+  generateApiRegex('notify'),
 ]
 app.use(async (req: any, res, next) => {
   console.log('admin authorization route')
@@ -99,5 +101,6 @@ router.post('/verify', async (req, res) => {
 })
 app.use('', router)
 app.use('/api', router)
+const hostname = '0.0.0.0'
 
-app.listen(9090, () => globalThis.console.log('Server is running on port 9090'))
+app.listen(9090, hostname, () => globalThis.console.log('Server is running on port 9090'))
