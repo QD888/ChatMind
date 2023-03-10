@@ -1,6 +1,7 @@
 import { users } from 'src/model'
 import type { User } from 'src/model/helper'
 import { generateToken, hashPassword, isAdmin, matchPassword } from 'src/utils/auth'
+import { initFreeTrial } from '../utils/subscription'
 
 function loginSuccess(user) {
   return {
@@ -45,6 +46,10 @@ const register = async (req, res) => {
     firstName,
     lastName,
   })
+
+  // update free trial
+  await initFreeTrial(username)
+  console.log(`Free trial inited for user ${username}`)
 
   res.send(registerSuccess({ username }))
 }

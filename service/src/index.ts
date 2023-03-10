@@ -4,7 +4,6 @@ import { authenticate, generateRegex as generateApiRegex, updateRootAdminUser } 
 import { users } from './model'
 import { Role } from './model/helper'
 import routers from './router'
-import type { AuthenticatedRequest } from './utils/helper'
 // update admin user
 updateRootAdminUser()
 
@@ -46,7 +45,7 @@ app.all('*', (_, res, next) => {
 })
 
 // req.auth populate
-app.use(async (req: AuthenticatedRequest, res, next) => {
+app.use(async (req: any, res, next) => {
   if (req.auth) {
     // inject role info
     const user = await users.read(req.auth.user)
@@ -60,7 +59,7 @@ app.use(async (req: AuthenticatedRequest, res, next) => {
 const ADMIN_PRIVILEGED_PATHS = [
   generateApiRegex('register'),
 ]
-app.use(async (req: AuthenticatedRequest, res, next) => {
+app.use(async (req: any, res, next) => {
   console.log('admin authorization route')
   const test = ADMIN_PRIVILEGED_PATHS.find(pregx => pregx.test(req.path))
   if (test && req.auth?.role !== Role.ADMIN) {

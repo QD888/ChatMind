@@ -1,9 +1,8 @@
 import express from 'express'
-import type { AuthenticatedRequest } from 'src/utils/helper'
 import { chatConfig } from '../chatgpt'
 
 const router = express.Router()
-router.get('/user', async (req: AuthenticatedRequest, res) => {
+router.get('/user', async (req: any, res) => {
   console.log('current user: ', req.auth)
   res.setHeader('Content-type', 'application/json')
   res.send(JSON.stringify({ user: req.auth.user }))

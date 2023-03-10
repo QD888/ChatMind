@@ -1,5 +1,5 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
-import { post } from '@/utils/request'
+import { get, post } from '@/utils/request'
 import { useTokenAuthStore } from '@/store'
 
 const withAuth = (request: any) => {
@@ -26,6 +26,14 @@ export function fetchChatConfig<T = any>() {
   return post<T>(withAuth({
     url: '/config',
   }))
+}
+
+export function fetchAccountSubscription<T = any>() {
+  const request = withAuth({
+    url: '/subscription',
+  })
+  console.log('get subscription', request)
+  return get<T>(request)
 }
 
 export function fetchChatAPIProcess<T = any>(

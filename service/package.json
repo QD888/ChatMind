@@ -25,10 +25,11 @@
   },
   "dependencies": {
     "@keyv/mysql": "^1.6.1",
+    "@qidian99/chatgpt": "^5.0.9",
     "alipay-sdk": "^3.3.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
-    "chatgpt": "^5.0.8",
+    "decimal.js": "^10.4.3",
     "dotenv": "^16.0.3",
     "esno": "^0.16.3",
     "express": "^4.18.2",

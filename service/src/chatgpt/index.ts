@@ -1,6 +1,6 @@
 import 'isomorphic-fetch'
-import type { ChatGPTAPIOptions, ChatMessage, SendMessageOptions } from 'chatgpt'
-import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from 'chatgpt'
+import type { ChatGPTAPIOptions, ChatMessage, SendMessageOptions } from '@qidian99/chatgpt'
+import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from '@qidian99/chatgpt'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 import fetch from 'node-fetch'
 import { sendResponse } from '../utils'
@@ -83,9 +83,17 @@ async function chatReplyProcess(
   message: string,
   lastContext?: { conversationId?: string; parentMessageId?: string },
   process?: (chat: ChatMessage) => void,
+  hooks?: {
+    precheck?: (token: number) => boolean
+    postProcess?: (token: number) => void
+  },
 ) {
-  // if (!message)
-  //   return sendResponse({ type: 'Fail', message: 'Message is empty' })
+  const {
+    precheck,
+    postProcess,
+  } = hooks ?? {}
+  if (!message)
+    return sendResponse({ type: 'Fail', message: 'Message is empty' })
 
   try {
     let options: SendMessageOptions = { timeoutMs }
@@ -100,12 +108,12 @@ async function chatReplyProcess(
 
     const response = await api.sendMessage(message, {
       ...options,
+      preCheckHook: precheck,
       onProgress: (partialResponse) => {
         process?.(partialResponse)
       },
+      postProcessHook: postProcess,
     })
-
-    console.log(response)
 
     return sendResponse({ type: 'Success', data: response })
   }

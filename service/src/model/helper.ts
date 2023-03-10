@@ -12,23 +12,30 @@ export enum Role {
   USER = 'user',
 }
 
+export enum SubscriptionPlan {
+  FREE = 'free',
+  STANDARD = 'standard',
+  PREMIUM = 'premium',
+}
+
 export interface User {
   username: string
   password: string
   firstName: string
   lastName: string
-  subscription: Subscription
+  subscription: string
   role: Role
 }
 
 export interface Subscription {
   id: string
-  plan: string
+  plan: SubscriptionPlan
   start: Date
   end: Date
   used: number
   max: number
   payments: Payment[]
+  previous: string
 }
 
 export interface Payment {
@@ -36,4 +43,7 @@ export interface Payment {
   user: User
   type: string
   amount: number
+  actualAmount: number
+  createdAt: Date
+  status: boolean
 }

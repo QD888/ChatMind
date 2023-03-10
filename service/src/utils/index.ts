@@ -5,7 +5,7 @@ interface SendResponseOptions {
 }
 
 export function sendResponse(options: SendResponseOptions) {
-  console.log('send resp', options)
+  // console.log('send resp', options)
   if (options.type === 'Success') {
     return Promise.resolve({
       message: options.message ?? null,

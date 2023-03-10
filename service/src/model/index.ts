@@ -10,8 +10,8 @@ class BaseModel<T> {
     this.entityName = entityName
   }
 
-  async create(id, data: Partial<T>) {
-    return await this.store.set(id, data)
+  async create(id, data: Partial<T>, ttl: number | undefined = undefined) {
+    return ttl ? await this.store.set(id, { id, ...data }, ttl) : await this.store.set(id, { [id]: id, ...data })
   }
 
   async read(id) {
