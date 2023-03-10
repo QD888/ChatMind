@@ -58,9 +58,10 @@ router.post('/pay', async (req: any, res) => {
       createdAt,
       amount,
       actualAmount,
+      status,
     } = value
     // 获取2分钟未支付的订单
-    if (countTimes(Date.parse(createdAt), Date.now()) <= 2) {
+    if (countTimes(Date.parse(createdAt), Date.now()) <= 2 && status) {
       // 如果存在
       orderNoExpire.push(actualAmount)
     }
@@ -77,7 +78,7 @@ router.post('/pay', async (req: any, res) => {
     // 获取2分钟未支付的订单的最小金额-0.01
     const needPayMin = createAmount(Math.min(...orderNoExpire), -0.01)
     // 如果最小金额-0.01小于订单价格则获取2分钟未支付的订单的最大金额+0.01
-    if (needPayMin <= amount) {
+    if (needPayMin < amount) {
       needPay = createAmount(Math.max(...orderNoExpire), 0.01)
     }
     else {

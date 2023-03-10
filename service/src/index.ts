@@ -11,6 +11,7 @@ const app = express()
 const router = express.Router()
 
 router.use(...routers)
+app.use(express.static('public'))
 
 app.use(authenticate.unless({
   path: [
@@ -26,7 +27,6 @@ app.use((err, _req, res, _next) => {
   res.status(err.status).json(err)
 })
 
-app.use(express.static('public'))
 // app.use(express.json())
 // app.use(express.urlencoded({extended:true}))
 
@@ -62,7 +62,7 @@ const ADMIN_PRIVILEGED_PATHS = [
   generateApiRegex('notify'),
 ]
 app.use(async (req: any, res, next) => {
-  console.log('admin authorization route')
+  // console.log('admin authorization route')
   const test = ADMIN_PRIVILEGED_PATHS.find(pregx => pregx.test(req.path))
   if (test && req.auth?.role !== Role.ADMIN) {
     const msg = `User ${req.auth?.user} is not authorized to access path ${req.path}`
