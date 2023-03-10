@@ -58,35 +58,6 @@ async function isCurrentUserAdmin(req) {
   return false
 }
 
-async function updateRootAdminUser() {
-  // Get an iterator
-  const iterator: AsyncGenerator<any, void, any> = users.iterator()
-
-  // Iterate over the key-value pairs
-  for await (const [key, value] of iterator) {
-    // update all users without role to be Role.USER
-    console.log(`[Next User] ${key}: ${JSON.stringify(value)}`)
-
-    if ((value?.role === Role.ADMIN && key !== ADMIN_USERNAME) || !key) {
-      users.delete(key)
-      console.log(`deleting user ${key}`)
-    }
-
-    if (!value.role) {
-      users.update(key, { role: Role.USER })
-      console.log(`updating role for user ${key}`)
-    }
-  }
-  users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN })
-}
-
-async function isCurrentUserAdmin(req) {
-  if (req.auth?.user && (await users.read(req.auth?.user)).role === Role.ADMIN)
-    return true
-
-  return false
-}
-
 function isAdmin(username, password) {
   if (ADMIN_USERNAME && ADMIN_PASSWORD)
     return username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD
