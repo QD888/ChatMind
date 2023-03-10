@@ -37,7 +37,7 @@ const timeLeft = ref(120)
 onMounted(() => {
   fetchSubscription()
 })
-const amount = ref(0.01)
+const amount = ref('0.01')
 
 const minutes = computed(() => Math.floor(timeLeft.value / 60)
   .toString()
@@ -52,6 +52,8 @@ const startCountdown = () => {
 }
 const handlePurchse = async (inputAmount: any) => {
   try {
+    if (isNaN(inputAmount))
+      inputAmount = '1.0'
     const order = await submitOrder({ amount: inputAmount })
     console.log(order)
     const {
@@ -61,7 +63,7 @@ const handlePurchse = async (inputAmount: any) => {
       },
     } = order
 
-    amount.value = +actualAmount
+    amount.value = actualAmount
     timeLeft.value = 120 - (Date.now() - Date.parse(createdAt)) / 1000
     startCountdown()
   }
@@ -86,9 +88,10 @@ const handlePurchse = async (inputAmount: any) => {
         {{ '提交' }}
       </NButton>
     </div>
+
     <div v-else class="ml-2 space-y-6">
       <h2 class="font-bold text-md">
-        实际赞赏{{ amount }}元，获得{{ Math.floor(amount * 10000) }} tokens， 并在 {{ minutes }}:{{ seconds }} 内完成操作
+        {{ `实际赞赏${amount}元，获得${Math.floor(+amount * 10000)} tokens， 并在 ${minutes}:${seconds} 内完成操作` }}
       </h2>
     </div>
     <WechatPay v-if="submitted" />

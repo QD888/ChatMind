@@ -5,8 +5,8 @@ import { fetchAccountSubscription } from '@/api'
 interface SubscriptionState {
   id?: string
   plan?: string
-  start?: Date
-  end?: Date
+  start?: string
+  end?: string
   used?: number
   max?: number
   orders?: Array<string>

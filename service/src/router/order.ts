@@ -86,11 +86,12 @@ router.post('/pay', async (req: any, res) => {
     }
   }
 
-  // 先判断未支付订单量是否超过10个
-  if (orderNoExpire.length >= 10) {
-    // 超过10个订单未支付
+  const maxOrders = process.env.MAX_INFLIGHT_ORDERS ? isNaN(+process.env.MAX_INFLIGHT_ORDERS) ? 10 : +process.env.MAX_INFLIGHT_ORDERS : 10
+  // 先判断未支付订单量是否超过X个
+  if (orderNoExpire.length >= maxOrders) {
+    // 超过X个订单未支付
     console.log('当前支付人数过多，请稍等再刷新页面！')
-    res.status(501).send({
+    res.status(503).send({
       status: 'Fail',
       message: '当前支付人数过多，请稍等再刷新页面！',
     })

@@ -1,11 +1,6 @@
 <script setup lang='ts'>
-import { computed } from 'vue'
 import { NImage } from 'naive-ui'
 import qrpay from '@/assets/qrpay.jpg'
-import { useUserStore } from '@/store'
-const userStore = useUserStore()
-
-const userInfo = computed(() => userStore.userInfo)
 </script>
 
 <template>
