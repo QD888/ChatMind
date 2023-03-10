@@ -9,7 +9,7 @@ interface SubscriptionState {
   end?: Date
   used?: number
   max?: number
-  payments?: Array<string>
+  orders?: Array<string>
   previous?: string
 }
 

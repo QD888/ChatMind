@@ -1,5 +1,6 @@
 import express from 'express'
-import { payments } from '../model'
+import { orders, users } from '../model'
+import { Role } from '../model/helper'
 import alipaySdk, { countTimes, createAmount, createOrderId } from '../utils/payment'
 
 const router = express.Router()
@@ -46,19 +47,19 @@ router.post('/pay', async (req, res) => {
   const amount = 0.01
 
   // 获取未支付订单列表
-  const paymentIt = payments.iterator()
+  const orderIt = orders.iterator()
 
   // 遍历订单
   const orderNoExpire: any[] = []
 
-  for await (const [key, value] of paymentIt) {
+  for await (const [key, value] of orderIt) {
     const {
       createdAt,
       amount,
       actualAmount,
     } = value
     // 获取2分钟未支付的订单
-    if (countTimes(createdAt, Date.now()) <= 2) {
+    if (countTimes(Date.parse(createdAt), Date.now()) <= 2) {
       // 如果存在
       orderNoExpire.push(actualAmount)
     }
@@ -102,17 +103,78 @@ router.post('/pay', async (req, res) => {
       actualAmount: needPay,
       status: false,
     }
-    await payments.create(id, order, 2 * 60_000)
+    await orders.create(id, order, 2 * 60_000)
 
     console.log(`创建订单成功！订单号：${id}，应付金额：${needPay}`, order)
     res.send({
       status: 'Success',
       message: 'Order created.',
       data: {
-        order,
+        id,
+        ...order,
       },
     })
   }
 })
 
+router.post('/notify', async (req: any, res) => {
+  const { id } = req.body
+
+  const user = req.auth.user
+  if (!isModerator((await users.read(user))?.role)) {
+    res.status(404).send({
+      status: 'Fail',
+      message: `用户无权操作订单${id}`,
+    })
+    return
+  }
+  const order = await orders.read(id)
+  if (!order) {
+    console.log(`订单 ${id} 不存在`)
+    res.status(404).send({
+      status: 'Fail',
+      message: `订单 ${id} 不存在`,
+    })
+    return
+  }
+  order.status = true
+  await orders.update(id, order)
+  console.log(`订单 ${id} 支付成功`)
+  res.send({
+    status: 'Success',
+    message: `订单 ${id} 支付成功`,
+  })
+})
+
+router.get('/order/:id', async (req, res) => {
+  const { id } = req.params
+  const order = await orders.read(id)
+  if (!order) {
+    console.log(`订单 ${id} 不存在`)
+    res.status(404).send({
+      status: 'Fail',
+      message: `订单 ${id} 不存在`,
+    })
+    return
+  }
+  const { status, actualAmount } = order
+  res.send({
+    status: 'Success',
+    data: {
+      id,
+      status,
+      actualAmount,
+
+    },
+  })
+})
+
 export default router
+function isModerator(role: string) {
+  if (!role)
+    return false
+
+  if (role === Role.ADMIN || role === Role.MODERATOR)
+    return true
+  return false
+}

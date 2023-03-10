@@ -1,6 +1,6 @@
 import type Keyv from 'keyv'
 import kv from '../utils/keyv'
-import type { Payment, Subscription, Token, User } from './helper'
+import type { Order, Subscription, Token, User } from './helper'
 
 class BaseModel<T> {
   store: Keyv
@@ -18,8 +18,8 @@ class BaseModel<T> {
     return this.store.get(id)
   }
 
-  async update(id, data: Partial<T>) {
-    return await this.store.set(id, { ...(await this.read(id)), ...data })
+  async update(id, data: Partial<T>, ttl: number | undefined = undefined) {
+    return ttl ? await this.store.set(id, { ...(await this.read(id)), ...data }, ttl) : await this.store.set(id, { ...(await this.read(id)), ...data })
   }
 
   async delete(id) {
@@ -57,20 +57,20 @@ class SubscriptionModel extends BaseModel<Subscription> {
   }
 }
 
-class PaymentModel extends BaseModel<Payment> {
-  static readonly NAMESPACE = 'payment'
+class OrderModel extends BaseModel<Order> {
+  static readonly NAMESPACE = 'order'
   constructor() {
-    super(PaymentModel.NAMESPACE)
+    super(OrderModel.NAMESPACE)
   }
 }
 
 const users = new UserModel()
 const subscriptions = new SubscriptionModel()
 const tokens = new TokenModel()
-const payments = new PaymentModel()
+const orders = new OrderModel()
 export {
   users,
   subscriptions,
   tokens,
-  payments,
+  orders,
 }

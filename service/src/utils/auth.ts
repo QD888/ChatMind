@@ -25,8 +25,8 @@ function matchPassword(plainPassword, hash) {
   return compareSync(plainPassword, hash)
 }
 
-function generateToken(user) {
-  return jwt.sign({ user }, jwtSecret, { expiresIn: 60 * 60 * 24 * 100 })
+function generateToken(user, ttl?) {
+  return jwt.sign({ user }, jwtSecret, { expiresIn: ttl ?? 60 * 60 * 24 })
 }
 
 async function updateRootAdminUser() {
@@ -36,7 +36,7 @@ async function updateRootAdminUser() {
   // Iterate over the key-value pairs
   for await (const [key, value] of iterator) {
     // update all users without role to be Role.USER
-    console.log(`[Next User] ${key}: ${JSON.stringify(value)}`)
+    // console.log(`[Next User] ${key}: ${JSON.stringify(value)}`)
 
     if ((value?.role === Role.ADMIN && key !== ADMIN_USERNAME) || !key) {
       users.delete(key)

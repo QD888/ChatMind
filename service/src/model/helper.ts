@@ -34,11 +34,11 @@ export interface Subscription {
   end: Date
   used: number
   max: number
-  payments: Payment[]
+  orders: Order[]
   previous: string
 }
 
-export interface Payment {
+export interface Order {
   id: string
   user: User
   type: string

@@ -1,16 +1,16 @@
-import { users } from 'src/model'
-import type { User } from 'src/model/helper'
-import { generateToken, hashPassword, isAdmin, matchPassword } from 'src/utils/auth'
+import { users } from '../model'
+import type { User } from '../model/helper'
+import { generateToken, hashPassword, isAdmin, matchPassword } from '../utils/auth'
 import { initFreeTrial } from '../utils/subscription'
 
-function loginSuccess(user) {
+function loginSuccess(user, ttl?) {
   return {
     code: 200,
     status: 'Success',
     message: 'Login success.',
     data: {
       user,
-      token: generateToken(user),
+      token: generateToken(user, ttl),
     },
   }
 }
