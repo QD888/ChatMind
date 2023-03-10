@@ -4,7 +4,10 @@ import { compareSync, hashSync } from 'bcrypt'
 import { users } from '../model'
 import { Role } from '../model/helper'
 const saltRounds = 10
-
+const authInfo = {
+  userCount: 0,
+  maxUserCount: isNaN(+process.env.MAX_USER_COUNT) ? 10 : +process.env.MAX_USER_COUNT,
+}
 let jwtSecret = ''
 // JWT related
 if (process.env.JWT_SECRET && process.env.JWT_SECRET.trim().length > 0)
@@ -37,10 +40,12 @@ async function updateRootAdminUser() {
   for await (const [key, value] of iterator) {
     // update all users without role to be Role.USER
     // console.log(`[Next User] ${key}: ${JSON.stringify(value)}`)
-
+    // update user count
+    authInfo.userCount++
     if ((value?.role === Role.ADMIN && key !== ADMIN_USERNAME) || !key) {
       users.delete(key)
       console.log(`deleting user ${key}`)
+      authInfo.userCount--
     }
 
     if (!value.role) {
@@ -48,6 +53,9 @@ async function updateRootAdminUser() {
       console.log(`updating role for user ${key}`)
     }
   }
+  if (!await users.read(ADMIN_USERNAME))
+    authInfo.userCount++
+
   users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN })
 }
 
@@ -79,4 +87,5 @@ export {
   updateRootAdminUser,
   isCurrentUserAdmin,
   isAdmin,
+  authInfo,
 }
