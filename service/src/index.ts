@@ -1,6 +1,6 @@
 import express from 'express'
 import './env'
-import { authenticate, generateRegex as generateApiRegex, updateRootAdminUser } from './utils/auth'
+import { authInfo, authenticate, generateRegex as generateApiRegex, updateRootAdminUser } from './utils/auth'
 import { users } from './model'
 import { Role } from './model/helper'
 import routers from './router'
@@ -60,8 +60,19 @@ app.use(async (req: any, res, next) => {
 // authorization for admin user
 const ADMIN_PRIVILEGED_PATHS = [
   generateApiRegex('notify'),
+  generateApiRegex('admin'),
 ]
 app.use(async (req: any, res, next) => {
+  // admin jwt reset
+  if (req.auth && req.auth?.role !== Role.ADMIN && authInfo.jwtResetTimestamp > 0) {
+    // console.log('checking jwt validity')
+    if (req.auth.iat < authInfo.jwtResetTimestamp) {
+      const msg = `Credentials have been revoked from user ${req.auth?.user}. Please login again.`
+      res.status(401).json({ type: 'Fail', message: msg })
+      return
+    }
+  }
+
   // console.log('admin authorization route')
   const test = ADMIN_PRIVILEGED_PATHS.find(pregx => pregx.test(req.path))
   if (test && req.auth?.role !== Role.ADMIN) {

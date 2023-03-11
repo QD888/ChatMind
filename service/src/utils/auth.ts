@@ -7,6 +7,7 @@ const saltRounds = 10
 const authInfo = {
   userCount: 0,
   maxUserCount: isNaN(+process.env.MAX_USER_COUNT) ? 10 : +process.env.MAX_USER_COUNT,
+  jwtResetTimestamp: 0,
 }
 let jwtSecret = ''
 // JWT related
@@ -60,7 +61,9 @@ async function updateRootAdminUser() {
   }
   else { users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN }) }
 }
-
+async function updateUser(user) {
+  return users.update(user.id, { password: user.password })
+}
 async function isCurrentUserAdmin(req) {
   if (req.auth?.user && (await users.read(req.auth?.user)).role === Role.ADMIN)
     return true
@@ -91,6 +94,7 @@ export {
   generateRegex,
   hashPassword,
   matchPassword,
+  updateUser,
   updateRootAdminUser,
   isCurrentUserAdmin,
   isAdmin,

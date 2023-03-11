@@ -6,6 +6,7 @@ import fetch from 'node-fetch'
 import { sendResponse } from '../utils'
 import type { ApiModel, ChatContext, ChatGPTUnofficialProxyAPIOptions, ModelConfig } from '../types'
 
+// TODO: usage above credit limit error code
 const ErrorCodeMessage: Record<string, string> = {
   401: '[OpenAI] 提供错误的API密钥 | Incorrect API key provided',
   403: '[OpenAI] 服务器拒绝访问，请稍后再试 | Server refused to access, please try again later',
