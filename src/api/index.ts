@@ -58,11 +58,17 @@ export function login({ username, password }: { username: string; password: stri
   })
 }
 
-export function signup({ username, password }: { username: string; password: string }) {
+export function signup({ username, password, email }: { username: string; password: string; email?: string }) {
   return post({
     url: '/register',
-    data: { username, password },
+    data: { username, password, email },
   })
+}
+
+export function currentUser() {
+  return get(withAuth({
+    url: '/user',
+  }))
 }
 
 export function fetchSession<T>() {

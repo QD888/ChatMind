@@ -13,8 +13,8 @@ import { t } from '@/locales'
 const error: Ref<null | string> = ref(null)
 
 const schema = Yup.object().shape({
-  username: Yup.string().required('Username is required'),
-  password: Yup.string().required('Password is required'),
+  username: Yup.string().required(t('account.usernameRequired')),
+  password: Yup.string().required(t('account.passwordRequired')),
 })
 
 async function onSubmit(values: any) {

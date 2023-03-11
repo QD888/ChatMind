@@ -58,10 +58,9 @@ export const useTokenAuthStore = defineStore('auth-store', {
 
     updateAuthInfo(authInfo: Partial<AuthInfo>) {
       const { token } = authInfo
-      if (!token)
-        console.log('Warning: user token not found')
 
       this.authInfo = { ...this.authInfo, ...authInfo }
+      // console.log('authInfo', this.authInfo)
       if (token)
         this.reloadRoute()
     },
@@ -77,11 +76,11 @@ export const useTokenAuthStore = defineStore('auth-store', {
         await router.push({ name: 'Root' })
     },
     checkTokenExpiration() {
-      console.log('Checking expire')
+      // console.log('Checking expire')
       try {
         const decodedToken: any = jwt_decode(this.authInfo.token!)
         const currentTime = Date.now() / 1000 // Convert to seconds
-        console.log(decodedToken, currentTime)
+        // console.log(decodedToken, currentTime)
 
         if (decodedToken.exp > currentTime)
           return false
@@ -89,7 +88,7 @@ export const useTokenAuthStore = defineStore('auth-store', {
       catch (ignored) {}
       // Token has expired
       console.log('Token has expired')
-
+      window.location.href = '/'
       // useAlertStore().error(t(' common.unauthorizedTips '))
       // Redirect to login page or handle token expiration as needed
       // const alertStore = useAlertStore()

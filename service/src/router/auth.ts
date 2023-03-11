@@ -4,8 +4,8 @@ import { login, register } from '../controllers/auth'
 
 const router = express.Router()
 router.get('/user', async (req: any, res) => {
-  console.log('current user: ', req.auth)
   const user = await users.read(req.auth.user)
+  // console.log('current user: ', req.auth, user)
 
   if (!user) {
     res.send({
@@ -15,11 +15,13 @@ router.get('/user', async (req: any, res) => {
     })
     return
   }
+  delete (user.password)
   res.send({
     code: 200,
     status: 'Success',
     data: {
       ...user,
+      // not including password field
     },
   })
 })

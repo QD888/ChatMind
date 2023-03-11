@@ -9,8 +9,8 @@ updateRootAdminUser()
 
 const app = express()
 const router = express.Router()
-
 router.use(...routers)
+
 app.use(express.static('public'))
 
 app.use(authenticate.unless({

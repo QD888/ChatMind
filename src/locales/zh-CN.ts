@@ -19,6 +19,7 @@ export default {
   account: {
     logo: '智聊',
     loginFailed: '登录失败，请检查账号密码',
+    signupFailed: '注册失败，请稍后重试',
     signinTitle: '账号登录',
     signin: '登录',
     signup: '注册',
@@ -27,6 +28,8 @@ export default {
     password: '密码',
     remember: '记住登录',
     forgotPass: '忘记密码',
+    passwordRequired: '密码不能为空',
+    usernameRequried: '用户名不能为空',
   },
   subscription: {
     title: '我的订阅',

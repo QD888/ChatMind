@@ -53,10 +53,12 @@ async function updateRootAdminUser() {
       console.log(`updating role for user ${key}`)
     }
   }
-  if (!await users.read(ADMIN_USERNAME))
+  // create or update admin user
+  if (!await users.read(ADMIN_USERNAME)) {
     authInfo.userCount++
-
-  users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN })
+    users.create(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN })
+  }
+  else { users.update(ADMIN_USERNAME, { password: hashPassword(ADMIN_PASSWORD!), role: Role.ADMIN }) }
 }
 
 async function isCurrentUserAdmin(req) {
@@ -78,6 +80,11 @@ function generateRegex(a, prefix = '/api') {
   return new RegExp(regexStr)
 }
 
+function validateEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return regex.test(email)
+}
+
 export {
   authenticate,
   generateToken,
@@ -88,4 +95,5 @@ export {
   isCurrentUserAdmin,
   isAdmin,
   authInfo,
+  validateEmail,
 }

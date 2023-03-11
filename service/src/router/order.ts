@@ -53,15 +53,14 @@ router.post('/pay', async (req: any, res) => {
   // 遍历订单
   const orderNoExpire: any[] = []
 
-  for await (const [key, value] of orderIt) {
+  for await (const [_, value] of orderIt) {
     const {
       createdAt,
-      amount,
       actualAmount,
       status,
     } = value
     // 获取2分钟未支付的订单
-    if (countTimes(Date.parse(createdAt), Date.now()) <= 2 && status) {
+    if (countTimes(Date.parse(createdAt), Date.now()) <= 2 && !status) {
       // 如果存在
       orderNoExpire.push(actualAmount)
     }
@@ -152,7 +151,7 @@ router.post('/notify', async (req: any, res) => {
   console.log(`using amount to verify order. amount=${amount}`)
   const orderIt = orders.iterator()
 
-  for await (const [key, value] of orderIt) {
+  for await (const [_, value] of orderIt) {
     const {
       createdAt,
       actualAmount,

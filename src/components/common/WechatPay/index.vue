@@ -8,6 +8,7 @@ import qrpay from '@/assets/qrpay.jpg'
     <NImage
       size="large"
       round
+      class="select-none"
       :src="qrpay"
       :fallback-src="qrpay"
     />

@@ -1,6 +1,6 @@
 import { users } from '../model'
 import type { User } from '../model/helper'
-import { authInfo, generateToken, hashPassword, isAdmin, matchPassword } from '../utils/auth'
+import { authInfo, generateToken, hashPassword, isAdmin, matchPassword, validateEmail } from '../utils/auth'
 import { initFreeTrial } from '../utils/subscription'
 
 function loginSuccess(user, ttl?) {
@@ -34,10 +34,15 @@ const login = async (req, res) => {
 }
 
 const register = async (req, res) => {
-  const { firstName, lastName, username, password = '' }: Partial<User> = req.body
+  const { firstName, lastName, username, email, password = '' }: Partial<User> = req.body
 
-  console.log('received user sign up request: ', { firstName, lastName, username })
+  console.log('received user sign up request: ', { firstName, lastName, username, email })
   console.log('total users: ', authInfo.userCount, 'max users: ', authInfo.maxUserCount)
+
+  if (email && !validateEmail(email)) {
+    res.send(registerFailed({ username }, 'Email is invalid.'))
+    return
+  }
 
   if (authInfo.userCount > authInfo.maxUserCount) {
     res.send(registerFailed({ username }, 'Max users exceeded.'))
@@ -51,6 +56,7 @@ const register = async (req, res) => {
   await users.create(username, {
     password: hashPassword(password),
     firstName,
+    email,
     lastName,
   })
 
@@ -76,6 +82,7 @@ function registerSuccess({ username }) {
 }
 
 function registerFailed({ username }, reason) {
+  console.log(`Register failed for user ${username}. Reason: ${reason}`)
   return {
     code: 403,
     status: 'Fail',

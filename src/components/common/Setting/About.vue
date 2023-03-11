@@ -39,15 +39,15 @@ onMounted(() => {
       </h2>
       <div class="p-2 space-y-2 rounded-md bg-neutral-100 dark:bg-neutral-700">
         <p>
-          此项目开源于
+          此项目部分开源于
           <a
             class="text-blue-600 dark:text-blue-500"
-            href="https://github.com/Chanzhaoyu/chatgpt-web"
+            href="https://github.com/qidian99/chatgpt-web"
             target="_blank"
           >
             Github
           </a>
-          ，免费且基于 MIT 协议，没有任何形式的付费行为！
+          ，开源部分永久免费且基于 MIT 协议。闭源部分可以通过赞助进行订阅。
         </p>
         <p>
           如果你觉得此项目对你有帮助，请在 Github 帮我点个 Star 或者给予一点赞助，谢谢！

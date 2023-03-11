@@ -1,12 +1,13 @@
 <script setup lang='ts'>
 import { computed } from 'vue'
 import { NAvatar } from 'naive-ui'
-import { useUserStore } from '@/store'
+import { useTokenAuthStore, useUserStore } from '@/store'
 import defaultAvatar from '@/assets/avatar.jpg'
 import { isString } from '@/utils/is'
 
 const userStore = useUserStore()
-
+const authTokenStore = useTokenAuthStore()
+const authInfo = computed(() => authTokenStore.authInfo)
 const userInfo = computed(() => userStore.userInfo)
 </script>
 

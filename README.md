@@ -192,6 +192,7 @@ docker run --name chatgpt-web --rm -it -p 3002:3002 --env OPENAI_API_KEY=your_ap
 # 后台运行
 docker run --name chatgpt-web -d -p 3002:3002 --env OPENAI_API_KEY=your_api_key chatgpt-web
 
+
 # 运行地址
 http://localhost:3002/
 ```

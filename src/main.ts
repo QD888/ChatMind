@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = createApp(App)
   setupAssets()
 
-  setupStore(app)
+  await setupStore(app)
 
   setupI18n(app)
 

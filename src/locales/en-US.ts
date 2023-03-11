@@ -19,6 +19,7 @@ export default {
   account: {
     logo: 'ChatMind',
     loginFailed: 'Login failed. Please check your credentials',
+    signupFailed: 'Sign up failed. Please try again later',
     signinTitle: 'Sign in to your account',
     signin: 'Sign in',
     signup: 'Sign up',
@@ -27,6 +28,8 @@ export default {
     password: 'Password',
     remember: 'Remember me',
     forgotPass: 'Forgot password?',
+    passwordRequired: 'Password is required',
+    usernameRequried: 'Username is required',
   },
   chat: {
     placeholder: 'Ask me anything...(Shift + Enter = line break)',

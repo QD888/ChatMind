@@ -19,13 +19,13 @@ const schema = Yup.object().shape({
 
 async function onSubmit(values: any) {
   error.value = null
-  console.log('submitting login', values)
+  console.log('submitting register', values)
   const tokenAuthStore = useTokenAuthStore()
   const { username, password } = values
   try {
     const resp = await signup({ username, password })
     if (resp.code === 200) {
-      console.log('login success', resp)
+      console.log('register success', resp)
       tokenAuthStore.updateAuthInfo({
         username: resp.data.user,
         token: resp.data.token,
@@ -33,9 +33,9 @@ async function onSubmit(values: any) {
     }
   }
   catch (e) {
-    // login failed
-    console.log('login failed')
-    error.value = t('account.loginFailed')
+    // register failed
+    console.log('register failed', e)
+    error.value = t('account.signupFailed')
   }
 }
 
@@ -55,7 +55,7 @@ const { isMobile } = useBasicLayout()
       >
         <div class="space-y-4 md:space-y-6 sm:p-8">
           <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            {{ $t('account.signinTitle') }}
+            {{ $t('account.signup') }}
           </h1>
           <Form v-slot="{ errors, isSubmitting }" class="space-y-4 md:space-y-6" :validation-schema="schema" @submit="onSubmit">
             <div>

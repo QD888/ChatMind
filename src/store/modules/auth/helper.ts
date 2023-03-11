@@ -17,6 +17,7 @@ const AUTH_LOCAL_NAME = 'authStorage'
 
 export interface AuthInfo {
   username: string
+  email?: string
   token?: string
 }
 
@@ -28,7 +29,7 @@ export interface UserState {
 export function defaultSetting(): UserState {
   return {
     authInfo: {
-      username: 'qidian',
+      username: 'ChatBot',
     },
     returnUrl: null,
   }
