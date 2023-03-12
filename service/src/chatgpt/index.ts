@@ -1,6 +1,6 @@
 import 'isomorphic-fetch'
-import type { ChatGPTAPIOptions, ChatMessage, SendMessageOptions } from '@qidian99/chatgpt'
-import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from '@qidian99/chatgpt'
+import type { ChatGPTAPIOptions, ChatMessage, SendMessageOptions, TokenInfo } from '@qidian99/chatgpt'
+import { ChatGPTAPI, ChatGPTPool, ChatGPTUnofficialProxyAPI } from '@qidian99/chatgpt'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 import fetch from 'node-fetch'
 import { sendResponse } from '../utils'
@@ -17,13 +17,13 @@ const ErrorCodeMessage: Record<string, string> = {
 }
 
 const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 30 * 1000
-
+const deleteTokenOnFail = process.env.USE_API_POOLING_DELETE_ON_FAIL ?? true
 let apiModel: ApiModel
 
 if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_ACCESS_TOKEN)
   throw new Error('Missing OPENAI_API_KEY or OPENAI_ACCESS_TOKEN environment variable')
 
-let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
+let api: ChatGPTPool | ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
 (async () => {
   // More Info: https://github.com/transitive-bullshit/chatgpt-api
@@ -53,7 +53,25 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
       }
     }
 
-    api = new ChatGPTAPI({ ...options })
+    if (process.env.USE_API_KEY_POOLING ?? true) {
+      console.log('Using api token pooling')
+      api = new ChatGPTPool({ ...options })
+
+      // add initial token into pool
+      const size = process.env.OPENAI_API_KEY_INITIAL_POOL_SIZE ?? 1
+      if (size > 1) {
+        try {
+          for (let i = 2; i <= size; i++) {
+            const token = process.env[`OPENAI_API_KEY${i}`]
+            addToken(token)
+          }
+        }
+        catch (e) {
+          console.log('Error while initializing token pool.', e)
+        }
+      }
+    }
+    else { api = new ChatGPTAPI({ ...options }) }
     apiModel = 'ChatGPTAPI'
   }
   else {
@@ -108,11 +126,11 @@ async function chatReplyProcess(
 
     const response = await api.sendMessage(message, {
       ...options,
-      preCheckHook: precheck,
+      preCheckHooks: [precheck],
       onProgress: (partialResponse) => {
         process?.(partialResponse)
       },
-      postProcessHook: postProcess,
+      postProcessHooks: [postProcess],
     })
 
     return sendResponse({ type: 'Success', data: response })
@@ -120,6 +138,19 @@ async function chatReplyProcess(
   catch (error: any) {
     const code = error.statusCode
     global.console.log(error)
+
+    console.log(JSON.stringify(error))
+
+    // may need to delete token from pool
+    if (code === 401) {
+      // get current token
+      const currentToken = (api as ChatGPTPool).getCurrentToken()
+      if (deleteTokenOnFail && currentToken) {
+        console.log('Deleting token on chat failure')
+        deleteToken(currentToken.id)
+      }
+    }
+
     if (Reflect.has(ErrorCodeMessage, code))
       return sendResponse({ type: 'Fail', message: ErrorCodeMessage[code] })
     return sendResponse({ type: 'Fail', message: error.message ?? 'Please check the back-end console' })
@@ -138,6 +169,24 @@ async function chatConfig() {
   })
 }
 
+function addToken(token: string) {
+  (api as ChatGPTPool).addToken(token)
+}
+
+function deleteToken(id: number): boolean {
+  return (api as ChatGPTPool).deleteToken(id)
+}
+function listTokens(): TokenInfo[] {
+  return (api as ChatGPTPool).listTokens()
+}
+
+function maskToken(tokenInfo: TokenInfo) {
+  const token = tokenInfo.token
+  tokenInfo.token = token.replace(/^sk-(.{3}).+(.{3})$/, 'sk-$1****************$2')
+
+  return tokenInfo
+}
+
 export type { ChatContext, ChatMessage }
 
-export { chatReplyProcess, chatConfig }
+export { chatReplyProcess, chatConfig, addToken, deleteToken, listTokens, maskToken }
