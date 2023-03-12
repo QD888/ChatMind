@@ -60,7 +60,7 @@ router.post('/verify', async (req, res) => {
 router.post('/admin/reset-jwt', async (req, res) => {
   try {
     // reset all JWT tokens
-    authInfo.jwtResetTimestamp = Date.now()
+    authInfo.jwtResetTimestamp = Math.floor(Date.now() / 1000)
     res.send({ status: 'Success', message: 'All JWT tokens have been reset', data: null })
   }
   catch (error) {

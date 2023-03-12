@@ -76,7 +76,6 @@ export const useTokenAuthStore = defineStore('auth-store', {
         await router.push({ name: 'Root' })
     },
     checkTokenExpiration() {
-      // console.log('Checking expire')
       try {
         const decodedToken: any = jwt_decode(this.authInfo.token!)
         const currentTime = Date.now() / 1000 // Convert to seconds
@@ -88,7 +87,10 @@ export const useTokenAuthStore = defineStore('auth-store', {
       catch (ignored) {}
       // Token has expired
       console.log('Token has expired')
-      window.location.href = '/'
+      // remove token
+      delete this.authInfo.token
+      router.push('/')
+
       // useAlertStore().error(t(' common.unauthorizedTips '))
       // Redirect to login page or handle token expiration as needed
       // const alertStore = useAlertStore()

@@ -65,7 +65,6 @@ const ADMIN_PRIVILEGED_PATHS = [
 app.use(async (req: any, res, next) => {
   // admin jwt reset
   if (req.auth && req.auth?.role !== Role.ADMIN && authInfo.jwtResetTimestamp > 0) {
-    // console.log('checking jwt validity')
     if (req.auth.iat < authInfo.jwtResetTimestamp) {
       const msg = `Credentials have been revoked from user ${req.auth?.user}. Please login again.`
       res.status(401).json({ type: 'Fail', message: msg })

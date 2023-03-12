@@ -9,7 +9,7 @@ const authInfo = {
   maxUserCount: isNaN(+process.env.MAX_USER_COUNT) ? 10 : +process.env.MAX_USER_COUNT,
   jwtResetTimestamp: 0,
 }
-let jwtSecret = ''
+let jwtSecret = 'default'
 // JWT related
 if (process.env.JWT_SECRET && process.env.JWT_SECRET.trim().length > 0)
   jwtSecret = process.env.JWT_SECRET
