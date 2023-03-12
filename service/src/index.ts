@@ -1,9 +1,9 @@
 import express from 'express'
-import './env'
 import { authInfo, authenticate, generateRegex as generateApiRegex, updateRootAdminUser } from './utils/auth'
 import { users } from './model'
 import { Role } from './model/helper'
 import routers from './router'
+import processEnv from '@/env'
 // update admin user
 updateRootAdminUser()
 
@@ -85,7 +85,7 @@ app.use(async (req: any, res, next) => {
 
 router.post('/session', async (req, res) => {
   try {
-    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
+    const AUTH_SECRET_KEY = processEnv.AUTH_SECRET_KEY
     const hasAuth = typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0
     res.send({ status: 'Success', message: '', data: { auth: hasAuth } })
   }
@@ -100,7 +100,7 @@ router.post('/verify', async (req, res) => {
     if (!token)
       throw new Error('Secret key is empty')
 
-    if (process.env.AUTH_SECRET_KEY !== token)
+    if (processEnv.AUTH_SECRET_KEY !== token)
       throw new Error('密钥无效 | Secret key is invalid')
 
     res.send({ status: 'Success', message: 'Verify successfully', data: null })

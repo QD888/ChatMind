@@ -29,7 +29,7 @@ export default {
     remember: 'Remember me',
     forgotPass: 'Forgot password?',
     passwordRequired: 'Password is required',
-    usernameRequried: 'Username is required',
+    usernameRequired: 'Username is required',
   },
   chat: {
     placeholder: 'Ask me anything...(Shift + Enter = line break)',

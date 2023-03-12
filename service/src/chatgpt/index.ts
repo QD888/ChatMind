@@ -5,6 +5,7 @@ import { SocksProxyAgent } from 'socks-proxy-agent'
 import fetch from 'node-fetch'
 import { sendResponse } from '../utils'
 import type { ApiModel, ChatContext, ChatGPTUnofficialProxyAPIOptions, ModelConfig } from '../types'
+import processEnv from '@/env'
 
 // TODO: usage above credit limit error code
 const ErrorCodeMessage: Record<string, string> = {
@@ -16,11 +17,11 @@ const ErrorCodeMessage: Record<string, string> = {
   500: '[OpenAI] 服务器繁忙，请稍后再试 | Internal Server Error',
 }
 
-const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 30 * 1000
-const deleteTokenOnFail = process.env.USE_API_POOLING_DELETE_ON_FAIL ?? true
+const timeoutMs: number = !isNaN(+processEnv.TIMEOUT_MS) ? +processEnv.TIMEOUT_MS : 30 * 1000
+const deleteTokenOnFail = processEnv.USE_API_POOLING_DELETE_ON_FAIL ?? true
 let apiModel: ApiModel
 
-if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_ACCESS_TOKEN)
+if (!processEnv.OPENAI_API_KEY && !processEnv.OPENAI_ACCESS_TOKEN)
   throw new Error('Missing OPENAI_API_KEY or OPENAI_ACCESS_TOKEN environment variable')
 
 let api: ChatGPTPool | ChatGPTAPI | ChatGPTUnofficialProxyAPI
@@ -28,37 +29,37 @@ let api: ChatGPTPool | ChatGPTAPI | ChatGPTUnofficialProxyAPI
 (async () => {
   // More Info: https://github.com/transitive-bullshit/chatgpt-api
 
-  if (process.env.OPENAI_API_KEY) {
-    const OPENAI_API_MODEL = process.env.OPENAI_API_MODEL
+  if (processEnv.OPENAI_API_KEY) {
+    const OPENAI_API_MODEL = processEnv.OPENAI_API_MODEL
     const model = (typeof OPENAI_API_MODEL === 'string' && OPENAI_API_MODEL.length > 0)
       ? OPENAI_API_MODEL
       : 'gpt-3.5-turbo'
 
     const options: ChatGPTAPIOptions = {
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: processEnv.OPENAI_API_KEY,
       completionParams: { model },
       debug: false,
     }
 
-    if (process.env.OPENAI_API_BASE_URL && process.env.OPENAI_API_BASE_URL.trim().length > 0)
-      options.apiBaseUrl = process.env.OPENAI_API_BASE_URL
+    if (processEnv.OPENAI_API_BASE_URL && processEnv.OPENAI_API_BASE_URL.trim().length > 0)
+      options.apiBaseUrl = processEnv.OPENAI_API_BASE_URL
 
-    if (process.env.SOCKS_PROXY_HOST && process.env.SOCKS_PROXY_PORT) {
+    if (processEnv.SOCKS_PROXY_HOST && processEnv.SOCKS_PROXY_PORT) {
       const agent = new SocksProxyAgent({
-        hostname: process.env.SOCKS_PROXY_HOST,
-        port: process.env.SOCKS_PROXY_PORT,
+        hostname: processEnv.SOCKS_PROXY_HOST,
+        port: processEnv.SOCKS_PROXY_PORT,
       })
       options.fetch = (url, options) => {
         return fetch(url, { agent, ...options })
       }
     }
 
-    if (process.env.USE_API_KEY_POOLING ?? true) {
+    if (processEnv.USE_API_KEY_POOLING ?? true) {
       console.log('Using api token pooling')
       api = new ChatGPTPool({ ...options })
 
       // add initial token into pool
-      const size = process.env.OPENAI_API_KEY_INITIAL_POOL_SIZE ?? 1
+      const size = processEnv.OPENAI_API_KEY_INITIAL_POOL_SIZE ?? 1
       if (size > 1) {
         try {
           for (let i = 2; i <= size; i++) {
@@ -76,22 +77,22 @@ let api: ChatGPTPool | ChatGPTAPI | ChatGPTUnofficialProxyAPI
   }
   else {
     const options: ChatGPTUnofficialProxyAPIOptions = {
-      accessToken: process.env.OPENAI_ACCESS_TOKEN,
+      accessToken: processEnv.OPENAI_ACCESS_TOKEN,
       debug: false,
     }
 
-    if (process.env.SOCKS_PROXY_HOST && process.env.SOCKS_PROXY_PORT) {
+    if (processEnv.SOCKS_PROXY_HOST && processEnv.SOCKS_PROXY_PORT) {
       const agent = new SocksProxyAgent({
-        hostname: process.env.SOCKS_PROXY_HOST,
-        port: process.env.SOCKS_PROXY_PORT,
+        hostname: processEnv.SOCKS_PROXY_HOST,
+        port: processEnv.SOCKS_PROXY_PORT,
       })
       options.fetch = (url, options) => {
         return fetch(url, { agent, ...options })
       }
     }
 
-    if (process.env.API_REVERSE_PROXY)
-      options.apiReverseProxyUrl = process.env.API_REVERSE_PROXY
+    if (processEnv.API_REVERSE_PROXY)
+      options.apiReverseProxyUrl = processEnv.API_REVERSE_PROXY
 
     api = new ChatGPTUnofficialProxyAPI({ ...options })
     apiModel = 'ChatGPTUnofficialProxyAPI'
@@ -162,9 +163,9 @@ async function chatConfig() {
     type: 'Success',
     data: {
       apiModel,
-      reverseProxy: process.env.API_REVERSE_PROXY,
+      reverseProxy: processEnv.API_REVERSE_PROXY,
       timeoutMs,
-      socksProxy: (process.env.SOCKS_PROXY_HOST && process.env.SOCKS_PROXY_PORT) ? (`${process.env.SOCKS_PROXY_HOST}:${process.env.SOCKS_PROXY_PORT}`) : '-',
+      socksProxy: (processEnv.SOCKS_PROXY_HOST && processEnv.SOCKS_PROXY_PORT) ? (`${processEnv.SOCKS_PROXY_HOST}:${processEnv.SOCKS_PROXY_PORT}`) : '-',
     } as ModelConfig,
   })
 }

@@ -2,6 +2,7 @@ import express from 'express'
 import { orders, subscriptions, users } from '../model'
 import { Role } from '../model/helper'
 import alipaySdk, { calculateTokens, countTimes, createAmount, createOrderId } from '../utils/payment'
+import processEnv from '@/env'
 
 const router = express.Router()
 
@@ -86,7 +87,7 @@ router.post('/pay', async (req: any, res) => {
     }
   }
 
-  const maxOrders = process.env.MAX_INFLIGHT_ORDERS ? isNaN(+process.env.MAX_INFLIGHT_ORDERS) ? 10 : +process.env.MAX_INFLIGHT_ORDERS : 10
+  const maxOrders = processEnv.MAX_INFLIGHT_ORDERS ? isNaN(+processEnv.MAX_INFLIGHT_ORDERS) ? 10 : +processEnv.MAX_INFLIGHT_ORDERS : 10
   // 先判断未支付订单量是否超过X个
   if (orderNoExpire.length >= maxOrders) {
     // 超过X个订单未支付

@@ -1,8 +1,9 @@
 import { subscriptions, users } from '../model'
 import { Role, SubscriptionPlan } from '../model/helper'
+import processEnv from '@/env'
 
-const FREE_TRAIL_MAX_TOKEN = process.env.FREE_TRAIL_MAX_TOKEN ? parseInt(process.env.FREE_TRAIL_MAX_TOKEN) : 100
-const FREE_TRAIL_PERIOD = process.env.FREE_TRAIL_PERIOD ? parseToMillis(process.env.FREE_TRAIL_PERIOD) : 24 * 60 * 60 * 1000
+const FREE_TRAIL_MAX_TOKEN = processEnv.FREE_TRAIL_MAX_TOKEN ? parseInt(processEnv.FREE_TRAIL_MAX_TOKEN) : 100
+const FREE_TRAIL_PERIOD = processEnv.FREE_TRAIL_PERIOD ? parseToMillis(processEnv.FREE_TRAIL_PERIOD) : 24 * 60 * 60 * 1000
 
 export async function initFreeTrial(username: string) {
   const subscriptionId = generateSubscriptionId(username)

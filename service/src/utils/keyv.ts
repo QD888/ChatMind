@@ -1,5 +1,5 @@
 import Keyv from 'keyv'
-
+import processEnv from '@/env'
 const kv: {
   default: Keyv
   user: Keyv
@@ -14,8 +14,8 @@ const kv: {
   order: null,
   token: null,
   create: (namespace) => {
-    if (process.env.MYSQL_URL) {
-      const url = process.env.MYSQL_URL
+    if (processEnv.MYSQL_URL) {
+      const url = processEnv.MYSQL_URL
       return new Keyv(url, { namespace })
     }
     else {
@@ -24,8 +24,8 @@ const kv: {
   },
 }
 
-if (process.env.MYSQL_URL) {
-  const url = process.env.MYSQL_URL
+if (processEnv.MYSQL_URL) {
+  const url = processEnv.MYSQL_URL
   kv.default = new Keyv(url)
   kv.user = new Keyv(url, { namespace: 'user' })
   kv.subcription = new Keyv(url, { namespace: 'subcription' })

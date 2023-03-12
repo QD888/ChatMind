@@ -1,5 +1,7 @@
+import processEnv from '@/env'
+
 const auth = async (req, res, next) => {
-  const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
+  const AUTH_SECRET_KEY = processEnv.AUTH_SECRET_KEY
   if (typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0) {
     try {
       const Authorization = req.header('Authorization')

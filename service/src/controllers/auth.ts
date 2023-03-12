@@ -2,7 +2,7 @@ import { users } from '../model'
 import type { User } from '../model/helper'
 import { authInfo, generateToken, hashPassword, isAdmin, matchPassword, validateEmail } from '../utils/auth'
 import { initFreeTrial } from '../utils/subscription'
-
+import processEnv from '@/env'
 function loginSuccess(user, ttl?) {
   return {
     code: 200,
@@ -48,7 +48,7 @@ const register = async (req, res) => {
     res.send(registerFailed({ username }, 'Max users exceeded.'))
     return
   }
-  if (process.env.ADMIN_USER === username || await users.has(username)) {
+  if (processEnv.ADMIN_USER === username || await users.has(username)) {
     res.send(registerFailed({ username }, 'User already exists.'))
     return
   }

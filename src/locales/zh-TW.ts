@@ -29,7 +29,7 @@ export default {
     remember: '記住登錄',
     forgotPass: '忘記密碼',
     passwordRequired: '密碼不能為空',
-    usernameRequried: '用戶名不能為空',
+    usernameRequired: '用戶名不能為空',
   },
   chat: {
     placeholder: '來說點什麼...（Shift + Enter = 換行）',

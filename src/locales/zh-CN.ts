@@ -29,7 +29,7 @@ export default {
     remember: '记住登录',
     forgotPass: '忘记密码',
     passwordRequired: '密码不能为空',
-    usernameRequried: '用户名不能为空',
+    usernameRequired: '用户名不能为空',
   },
   subscription: {
     title: '我的订阅',

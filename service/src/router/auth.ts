@@ -2,6 +2,7 @@ import express from 'express'
 import { users } from 'src/model'
 import { authInfo, hashPassword, updateUser } from 'src/utils/auth'
 import { login, register } from '../controllers/auth'
+import processEnv from '@/env'
 
 const router = express.Router()
 router.get('/user', async (req: any, res) => {
@@ -31,7 +32,7 @@ router.post('/register', register)
 
 router.post('/session', async (req, res) => {
   try {
-    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
+    const AUTH_SECRET_KEY = processEnv.AUTH_SECRET_KEY
     const hasAuth = typeof AUTH_SECRET_KEY === 'string' && AUTH_SECRET_KEY.length > 0
     res.send({ status: 'Success', message: '', data: { auth: hasAuth } })
   }
@@ -45,7 +46,7 @@ router.post('/verify', async (req, res) => {
     if (!token)
       throw new Error('Secret key is empty')
 
-    if (process.env.AUTH_SECRET_KEY !== token)
+    if (processEnv.AUTH_SECRET_KEY !== token)
       throw new Error('密钥无效 | Secret key is invalid')
 
     res.send({ status: 'Success', message: 'Verify successfully', data: null })

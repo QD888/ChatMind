@@ -1,11 +1,13 @@
 <script setup lang='ts'>
 import { computed } from 'vue'
 import { NAvatar } from 'naive-ui'
-import { useUserStore } from '@/store'
+import { useTokenAuthStore, useUserStore } from '@/store'
 import defaultAvatar from '@/assets/avatar.jpg'
 import { isString } from '@/utils/is'
 
 const userStore = useUserStore()
+const authTokenStore = useTokenAuthStore()
+const authInfo = computed(() => authTokenStore.authInfo)
 const userInfo = computed(() => userStore.userInfo)
 </script>
 
@@ -29,7 +31,7 @@ const userInfo = computed(() => userStore.userInfo)
         {{ userInfo.name ?? 'Dian Qi' }}
         <div class="ml-2">
           <h2 class="font-bold text-md">
-            {{ userInfo.name ?? 'Dian Qi' }}
+            {{ userInfo.name.length > 0 ? userInfo.name : authInfo.username ?? 'ChatBot' }}
           </h2>
           <p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap">
             <span

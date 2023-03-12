@@ -3,18 +3,20 @@ import jwt from 'jsonwebtoken'
 import { compareSync, hashSync } from 'bcrypt'
 import { users } from '../model'
 import { Role } from '../model/helper'
+import processEnv from '@/env'
+
 const saltRounds = 10
 const authInfo = {
   userCount: 0,
-  maxUserCount: isNaN(+process.env.MAX_USER_COUNT) ? 10 : +process.env.MAX_USER_COUNT,
+  maxUserCount: isNaN(+processEnv.MAX_USER_COUNT) ? 10 : +processEnv.MAX_USER_COUNT,
   jwtResetTimestamp: 0,
 }
 let jwtSecret = 'default'
 // JWT related
-if (process.env.JWT_SECRET && process.env.JWT_SECRET.trim().length > 0)
-  jwtSecret = process.env.JWT_SECRET
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
+if (processEnv.JWT_SECRET && processEnv.JWT_SECRET.trim().length > 0)
+  jwtSecret = processEnv.JWT_SECRET
+const ADMIN_USERNAME = processEnv.ADMIN_USERNAME
+const ADMIN_PASSWORD = processEnv.ADMIN_PASSWORD
 
 const authenticate = expressjwt({
   secret: jwtSecret,
@@ -73,7 +75,7 @@ async function isCurrentUserAdmin(req) {
 
 function isAdmin(username, password) {
   if (ADMIN_USERNAME && ADMIN_PASSWORD)
-    return username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD
+    return username === processEnv.ADMIN_USERNAME && password === processEnv.ADMIN_PASSWORD
 
   return false
 }
